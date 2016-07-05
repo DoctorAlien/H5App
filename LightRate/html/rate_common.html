@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>slidPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/html.css"/>
+</head>
+<body>
+<header>
+    <div class="header">
+        <div class="title" >常用汇率</div>
+        <a></a>
+    </div>
+</header>
+<div class="container">
+    <div id="card-container"></div>
+</div>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+    apiready = function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err){
+            api.closeWidget();
+        });
+        api.loadSecureValue({
+            key:'juhe_apikey'
+        }, function(ret, err){
+            var juhe_apikey = ret.value;
+            api.ajax({
+            url: 'http://op.juhe.cn/onebox/exchange/query?key='+juhe_apikey,
+            method: 'GET'
+            },function(commonListData, err){
+            var str_cldj="";
+            var str_cldj_jts="";
+            if (commonListData) {
+                var commonListDataJson=commonListData['result']['list'];
+                var updateTime=commonListData['result']['update'];
+                for (var cldj in commonListDataJson) {
+                    str_cldj+='<div class="card"><div class="card-head"><div class="card-title"><center><h3>'+commonListDataJson[cldj][0]+'</h3></center></div></div><div class="card-body"><div><strong>交易单位</strong> : '+commonListDataJson[cldj][1]+'</div><div><strong>中间价</strong> : '+commonListDataJson[cldj][2]+'</div><div><strong>现汇买入价</strong> : '+commonListDataJson[cldj][3]+'</div><div><strong>现钞买入价</strong> : '+commonListDataJson[cldj][4]+'</div><div><strong>卖出价</strong> : '+commonListDataJson[cldj][5]+'</div></div><div class="card-foot"><center>更新于 '+updateTime+'</center></div></div>';
+                };
+                $api.byId('card-container').innerHTML=str_cldj;
+            }});
+        });
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>slidPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/html.css"/>
+</head>
+<style type="text/css">
+    .compute{border-bottom: solid 1px #ccc;}
+    .compute-main input:focus,.compute-main select:focus{outline:none}
+    .compute-main select{-webkit-appearance: none;border: 0;background-color: rgb(255,255,255);padding:20px 0px 20px 10px;color: #555555;text-align: center;border-right: solid 1px #ccc;width: 33%}
+    .compute-main select option{}
+    .compute-main input{text-align: right;width: 63%}
+    .remark{margin-top: 15px;line-height: 20px;}
+</style>
+<body>
+<header>
+    <div class="header">
+        <a class="menu" tapmode="" onclick="sliding()"></a>
+        <div class="title" >汇率换算</div>
+        <a></a>
+    </div>
+</header>
+<div class="compute">
+    <div class="container">
+        <div class="compute-main">
+            <div>
+                <select id="currency-from"></select>
+                <input type="number" onkeyup="compute_currency('currency-from','currency-to','currency-from-value','currency-to-value');" onkeydown="compute_currency('currency-from','currency-to','currency-from-value','currency-to-value');" onclick="this.value='';" placeholder="请输入金额" id="currency-from-value"/>
+            </div>
+            <div>
+                <select id="currency-to"></select>
+                <input type="number" value="0" onkeyup="compute_currency('currency-to','currency-from','currency-to-value','currency-from-value');" onkeydown="compute_currency('currency-to','currency-from','currency-to-value','currency-from-value');" onclick="this.value='';" placeholder="请输入金额" id="currency-to-value"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="remark">
+<div style="font-size:14px;" id="remark-ps1"></div>
+<div style="color:#8c8c8c;font-size:12px;"><center>数据仅供参考，交易时以银行柜台成交价为准</center></div>
+</div>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+    function sliding() {
+        api.openSlidPane({type: 'left'});
+    }
+    apiready = function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err){
+            api.closeWidget();
+        });
+        api.loadSecureValue({
+            key:'juhe_apikey'
+        }, function(ret, err){
+            var juhe_apikey = ret.value;
+            api.ajax({
+            url:'http://op.juhe.cn/onebox/exchange/list?key='+juhe_apikey,
+            method:'GET',
+            },function(listData,err){
+            var str_ldj="";
+            if (listData) {
+                var listDataJson=listData['result']['list'];
+                for (var ldj in listDataJson) {
+                    str_ldj+='<option value="'+listDataJson[ldj].code+'">'+listDataJson[ldj].name+'</option>';
+                };
+                $api.append($api.byId('currency-from'), str_ldj);
+                $api.append($api.byId('currency-to'), str_ldj);
+                };
+            });
+        });
+	};
+    var currency_from_select="";
+    var currency_from_value="";
+    var currency_to_select="";
+    var currency_to_value="";
+    function compute_currency(currency_from_id,currency_to_id,currency_from_value_id,currency_to_value_id){
+        currency_from_select=isNullCurrency($api.byId(currency_from_id).value);
+        currency_to_select=isNullCurrency($api.byId(currency_to_id).value);
+        currency_from_value=$api.byId(currency_from_value_id).value;
+        api.loadSecureValue({
+            key:'juhe_apikey'
+        }, function(ret, err){
+            var juhe_apikey = ret.value;
+            if (!isSameCurrency(currency_from_select,currency_to_select)) {
+            api.ajax({
+            url:'http://op.juhe.cn/onebox/exchange/currency?key='+juhe_apikey+'&from='+currency_from_select+'&to='+currency_to_select,
+            method:'GET',
+            },function(data,err){
+            var str_dj="";
+            if (data) {
+                var dataJson=data['result'][0];
+                for (var dj in dataJson) {
+                    var result=(data['result'][0]['exchange']*currency_from_value)/data['result'][0]['currencyFD'];
+                    $api.byId(currency_to_value_id).value=result;
+                    $api.byId('remark-ps1').innerHTML='<center>'+data['result'][0]['currencyFD']+data['result'][0]['currencyF_Name']+' = '+data['result'][0]['exchange']+data['result'][0]['currencyT_Name']+' , 更新于'+data['result'][0]['updateTime']+'</center>';
+                    };
+                };
+            });
+        };
+        });
+    }
+    function isNullCurrency(currency_select){
+        if (currency_select==null||currency_select=="") {
+            return currency_select="CNY";
+        }else{
+            return currency_select;
+        };
+    };
+    function isSameCurrency(currency_from_select,currency_to_select){
+        if (currency_from_select==currency_to_select) {
+            api.alert({
+                title: '货币选择错误',
+                msg: '请选择不同种类的货币',
+                });
+            return true;
+        }else{
+            return false;
+        };
+    }
+</script>
+
+</body>
+</html>

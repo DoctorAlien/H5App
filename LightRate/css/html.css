@@ -1,0 +1,14 @@
+header {background-color: #f2f2f2;border-bottom: 1px solid #f2f2f2;}
+.header {display: -webkit-box;display: -webkit-flex;display: flex;}
+.header a{display: block;padding: 20px;}
+.title {line-height:40px;
+-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;text-align: center;font-weight: bolder;font-size: 1.5em;padding-top: 10px;padding-bottom: 10px;}
+.header .menu {background-size: 30px;background-repeat: no-repeat;background-position: center;background-image: url("../image/menu.png");}
+
+
+html{overflow-x:hidden;overflow-y:hidden;}
+.container{padding: 20px;}
+.card{border:solid 1px #ccc;margin-bottom: 20px;}
+.card-head,.card-body,.card-foot{padding:10px;}
+.card-head{border-bottom: 1px solid #ccc;background-color: #f2f2f2}
+.card-foot{border-top:1px solid #ccc;background-color: #f2f2f2;color: #8c8c8c}

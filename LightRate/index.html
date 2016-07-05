@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>侧边导航</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+</head>
+<body>
+<script>
+    apiready = function () {
+        api.openSlidLayout({
+            type: 'left',
+            leftEdge: 20,
+            fixedPane: {
+                name: 'slid_rate_compute',
+                url: 'html/rate_common.html'
+            },
+            slidPane: {
+                name: 'slid_rate_compute',
+                url: 'html/rate_compute.html'
+            }
+        }, function (ret) {
+
+        });
+    }
+</script>
+
+</body>
+</html>
